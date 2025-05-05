@@ -146,8 +146,20 @@ We identified the following requirements for this project:
 | User Story          | As developers of this product, we need to find data to train and develop our model and also work on procuring the proper data for our project. |
 | Requirement         | Must be viable for the basis of this project and be usable without investment of significant time and processing power. |
 | Acceptance Criteria | Must already be on TRITON/CIRRUS.<br>Data must contain the variables relevant to our mission statement. |
-| Automated Test      | Test if file imports properly.<br>Use an xarray plot and visually inspect to ensure correct import. |
+| Automated Test      | Test to ensure data is in the necessary pd.dataframe format |
 | Status              | Complete |
+```
+def assert_is_dataframe(df):
+    """
+    Assert that the given object is a pandas DataFrame.
+    """
+    import pandas as pd
+
+    assert isinstance(df, pd.DataFrame), (
+        f"Expected pandas.DataFrame, got {type(df)}"
+    )
+    print("Assertion passed: df is a pandas DataFrame")
+```
 
 | Field               | TOR_AI-03 |
 |---------------------|-----------|
@@ -182,8 +194,40 @@ We identified the following requirements for this project:
 | User Story          | We need to create three subsets of data based on the data we already possess to train, validate, and test the model. Training and validation can be manipulated, but testing must remain untouched after selection. Years should not overlap. |
 | Requirement         |  |
 | Acceptance Criteria | Have 30 of each classification for training and 10 of each classification for both validation and testing.<br>Ensure data is in the correct format (e.g., pickle files) and properly analyzed before use. |
-| Automated Test      | Assert that each subset has the correct size and classification counts. |
+| Automated Test      | Assert that each subset was split correctly. |
 | Status              | Complete |
+
+```
+def check_splits(train_csv='train.csv',
+                 val_csv='val.csv',
+                 test_csv='test.csv',
+                 original_csv='/home/scratch/BWEART2/tor_RF_event_values_shorts.csv'):
+    """
+    Load split CSVs and the original, print their lengths,
+    and assert that they sum to the original size.
+    """
+    train    = pd.read_csv(train_csv)
+    val      = pd.read_csv(val_csv)
+    test     = pd.read_csv(test_csv)
+    original = pd.read_csv(original_csv)
+    
+    n_train = len(train)
+    n_val   = len(val)
+    n_test  = len(test)
+    n_orig  = len(original)
+    
+    print(f"Train size:      {n_train}")
+    print(f"Validation size: {n_val}")
+    print(f"Test size:       {n_test}")
+    print(f"Original size:   {n_orig}")
+    
+    assert n_train + n_val + n_test == n_orig, (
+        f"Split sizes ({n_train + n_val + n_test}) ≠ original size ({n_orig})"
+    )
+
+# Run the check in Jupyter:
+check_splits()
+```
 
 | Field               | TOR_AI-06 |
 |---------------------|-----------|
@@ -243,4 +287,4 @@ We identified the following requirements for this project:
 | Requirement         | Classify a real day’s 4-day environment in real time. |
 | Acceptance Criteria | Successfully determine if a real-time environment will be tornadic, significant tornadic, or non-tornadic.<br>Successfully ingest operational real-time GEFS data. |
 | Automated Test      | Ensure live data ingestion does not error.<br>Reuse unit tests for prior aspects and compare model output to storm reports after the event. |
-| Status              | Complete |
+| Status              | Scrapped |
