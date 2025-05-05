@@ -5,6 +5,8 @@ Authors: Brandon Weart, Daniel Wefer
 ### Data Download
 The data for this project can be located on the Amazon Web Service (AWS) cloud server: https://registry.opendata.aws/noaa-gefs-reforecast/
 
+And at: https://www.spc.noaa.gov/wcm/
+
 
 These Python packages are required to run the code in this repository. 
 * Pandas 
@@ -25,7 +27,7 @@ Forecasting tornadoes with machine learning has become a major staple in the atm
 
 
 ### Data and Methods
-
+#### Working with the data
 Though we did not explicitly define thresholds for tornado days, we were able to extract days fitting thresholds defining non-tornado days, tornado days, and significant tornado days.
 
 _Table 1: Tornado-day definitions_
@@ -56,7 +58,7 @@ _Table 2: Environmental variables extracted from GEFS at each grid cell_
 | srh3km       | 0–3 km storm-relative helicity                      |
 | scp          | Supercell composite parameter                       |
 | stp          | Significant tornado parameter                       |
-| vtp          | Vertical totals parameter                           |
+| vtp          | Violent Tornado parameter                           |
 | lcl          | Lifting condensation level                          |
 | shear6km     | Bulk wind shear (surface–6 km)                      |
 | mslp         | Mean sea level pressure                             |
@@ -66,5 +68,13 @@ _Table 2: Environmental variables extracted from GEFS at each grid cell_
 
 
 
-This dataset is gridded and has multiple timesteps for each day. As we are using a random forest model, we need to convert this data into tabular format. To do this, we extracted the max value over the time dimension at each grid cell, then took the sum, median, and max of those variables and appended them to a CSV for each date
+This dataset is gridded and has multiple timesteps for each day. As we are using a random forest model, we need to convert this data into a tabular format. To do this, we extracted the max value over the time dimension at each grid cell, then took the sum, median, and max of those variables and appended them to a CSV for each date. There is an interesting correlation between the distribution of each variable for each label type (Fig. 2).
 
+![Boxplots](Images/boxplots.png)
+
+Before the model can be trained on the data, it needed to be split up into three different subsets: training, validation, testing. Training data is utilized to initally train the model and usually encompasses the largest portion of the data. The validation data is used as a sort of pseudo-test, and allows you to see the results of the model, and further tweak the hyperparameters of the model as the user sees fit. Scikit-learn has a built in function to take care of splitting the data into training and testing, so a workaround was utilized to create the validation dataset from a temporary subset. Utilizing the scikit-learn train-test split function (Scikit-learn 2025a), the data was first split into train and "temp", the temporary subset mentioned. The temporary subset contained 30% of the data. It was further split into validation and testing with a second iteration of the function, splitting the test to be 66% of the temp. The data was split 70%, 10%, 20% for train, val, test, respectively. 
+
+
+### Model configuration and results
+
+To initialize the random forest model, we utilized Scikit-learns RandomForestClassifer function (Scikit-learn 2025b). After modifying the hyperparameters, the best model configuration was found to
