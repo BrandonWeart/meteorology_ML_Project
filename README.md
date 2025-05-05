@@ -266,9 +266,12 @@ check_splits()
 | Status              | Complete |
 
 ```
-# This only requires one line of code, but it's essential
-metrics.ConfusionMatrixDisplay(metrics.confusion_matrix(expected, predicted)).plot()
-
+def confusion_matrix_val():
+    print("Classification report for classifier 1, %s:\n%s\n"
+      % (rf_clf, metrics.classification_report(expected, predicted)))
+    metrics.ConfusionMatrixDisplay(metrics.confusion_matrix(expected, predicted)).plot()
+    plt.show()
+confusion_matrix_val()
 ```
 | Field               | TOR_AI-09 |
 |---------------------|-----------|
